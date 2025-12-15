@@ -8,15 +8,21 @@ def View_E2E_Data(root):
 
   # --- Your Data ---
   headers = [
-    ('Buyer', 15),
+    ('Buyer', 12),
     ('Order', 9),
-    ('Style', 9),
-    ('Grey Book. Qty', 18),
-    ('Grey Recv. Qty', 18),
-    ('Grey Bal. Qty', 18),
-    ('Finish Book. Qty', 18),
-    ('Finish Recv. Qty', 18),
-    ('Finish Bal. Qty', 18),
+    ('Grey Book. Qty', 15),
+    ('Grey Recv. Qty', 15),
+    ('Grey Bal. Qty', 15),
+    ('Finish Book. Qty', 15),
+    ('Finish Recv. Qty', 15),
+    ('Finish Bal. Qty', 15),
+    ('Order Qty', 15),
+    ('Cutting Qty', 15),
+    ('Input Qty', 15),
+    ('Output Qty', 15),
+    ('Poly Qty', 15),
+    ('Shipped Qty', 15),
+
   ]
 
   for col_idx, (header, width) in enumerate(headers):
@@ -52,16 +58,31 @@ def View_E2E_Data(root):
 
   # Populate the table with data
   for row_idx, row in data.iterrows():
+    grey_book = row['Grey Book. Qty']
+    finish_book = row['Finish Book. Qty']
     order_qty = row['Order Qty']
+
     for col_idx, (header, width) in enumerate(headers):
-      if col_idx < 3:  # First three columns are left-aligned
+      if col_idx < 2:  # First three columns are left-aligned
         value = row.get(header, "")
         cell = tk.Label(scrollable_frame, text=str(value), font=("Calibri", 11), padx=2, pady=2, width=width, anchor="w")
         cell.grid(row=row_idx, column=col_idx, sticky="w")
-      else: 
-        value = row.get(header, "") # Other columns are right-aligned
+      elif col_idx >= 2 and col_idx <= 4:
+        value = row.get(header, "")
+        progress = ttk.Progressbar(scrollable_frame, length=150, mode='determinate')
+        progress['maximum'] = grey_book if grey_book > 0 else 1
+        progress['value'] = value if pd.notna(value) else 0
+        progress.grid(row=row_idx, column=col_idx, sticky="w", padx=2, pady=2)
+      elif col_idx >= 5 and col_idx <= 7:
+        value = row.get(header, "")
+        progress = ttk.Progressbar(scrollable_frame, length=150, mode='determinate')
+        progress['maximum'] = finish_book if finish_book > 0 else 1
+        progress['value'] = value if pd.notna(value) else 0
+        progress.grid(row=row_idx, column=col_idx, sticky="w", padx=2, pady=2)
+      else:
+        value = row.get(header, "")
         progress = ttk.Progressbar(scrollable_frame, length=150, mode='determinate')
         progress['maximum'] = order_qty if order_qty > 0 else 1
         progress['value'] = value if pd.notna(value) else 0
         progress.grid(row=row_idx, column=col_idx, sticky="w", padx=2, pady=2)
-  
+ 
