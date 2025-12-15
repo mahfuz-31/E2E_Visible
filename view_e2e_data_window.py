@@ -1,44 +1,67 @@
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
+
 def View_E2E_Data(root):
   new_window = tk.Toplevel(root)
   new_window.title("Garments Status Data")
   new_window.geometry("1920x1080")
 
+  # --- Horizontal Scrollbar Setup ---
+  main_frame = tk.Frame(new_window)
+  main_frame.pack(fill="both", expand=True)
+
+  main_canvas = tk.Canvas(main_frame)
+  h_scrollbar = tk.Scrollbar(main_frame, orient="horizontal", command=main_canvas.xview)
+  
+  main_canvas.configure(xscrollcommand=h_scrollbar.set)
+  
+  h_scrollbar.pack(side="bottom", fill="x")
+  main_canvas.pack(side="left", fill="both", expand=True)
+
+  wrapper_frame = tk.Frame(main_canvas)
+  main_canvas.create_window((0, 0), window=wrapper_frame, anchor="nw")
+
+  def on_frame_configure(event):
+    main_canvas.configure(scrollregion=main_canvas.bbox("all"))
+  wrapper_frame.bind("<Configure>", on_frame_configure)
+
   # --- Your Data ---
   headers = [
     ('Buyer', 12),
     ('Order', 9),
-    ('Grey Book. Qty', 15),
-    ('Grey Recv. Qty', 15),
-    ('Grey Bal. Qty', 15),
-    ('Finish Book. Qty', 15),
-    ('Finish Recv. Qty', 15),
-    ('Finish Bal. Qty', 15),
-    ('Order Qty', 15),
-    ('Cutting Qty', 15),
-    ('Input Qty', 15),
-    ('Output Qty', 15),
-    ('Poly Qty', 15),
-    ('Shipped Qty', 15),
-
+    ('Grey Book. Qty', 18),
+    ('Grey Recv. Qty', 18),
+    ('Grey Bal. Qty', 18),
+    ('Finish Book. Qty', 18),
+    ('Finish Recv. Qty', 18),
+    ('Finish Bal. Qty', 18),
+    ('Order Qty', 18),
+    ('Cutting Qty', 18),
+    ('Input Qty', 18),
+    ('Output Qty', 18),
+    ('Poly Qty', 18),
+    ('Shipped Qty', 20),
   ]
 
   for col_idx, (header, width) in enumerate(headers):
-      headerL = tk.Label(
-          new_window, text=header,
-          font=("Calibri", 11, 'normal', 'underline'),
-          fg="darkgreen",
-          width=width,   # <-- custom width per column
-          anchor="w"
-      )
-      headerL.grid(row=0, column=col_idx, sticky="w", padx=2, pady=2)
+    headerL = tk.Label(
+      wrapper_frame, text=header,
+      font=("Calibri", 11, 'normal', 'underline'),
+      fg="darkgreen",
+      width=width,   # <-- custom width per column
+      anchor="w"
+    )
+    headerL.grid(row=0, column=col_idx, sticky="w", padx=2, pady=2)
+  
   data = pd.read_excel("E2E_output.xlsx")
+
   # Create a frame for the table and add a vertical scrollbar
-  table_frame = tk.Frame(new_window)
+  # Note: table_frame is now inside wrapper_frame
+  table_frame = tk.Frame(wrapper_frame)
   table_frame.grid(row=1, column=0, columnspan=len(headers) + 1, sticky="nsew")
 
+  # Existing vertical scroll logic
   canvas = tk.Canvas(table_frame, height=690)
   scrollbar = tk.Scrollbar(table_frame, orient="vertical", command=canvas.yview)
   scrollable_frame = tk.Frame(canvas)
@@ -85,4 +108,3 @@ def View_E2E_Data(root):
         progress['maximum'] = order_qty if order_qty > 0 else 1
         progress['value'] = value if pd.notna(value) else 0
         progress.grid(row=row_idx, column=col_idx, sticky="w", padx=2, pady=2)
- 
