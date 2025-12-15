@@ -34,13 +34,15 @@ def garments_sp_search(root, progress, orders):
         result_row = rows[len(rows) - 1]
         remv_idx = [0, 1, 4, 5, 7, 9, 11]
         result_row = [item for i, item in enumerate(result_row) if i not in remv_idx]
-        print("Processed data for FRS", order, ":", result_row)
         i = 0
         for col in columns:
             if i > len(result_row) - 1:
                 break
             else:
-                result_df.loc[idx, col] = int(result_row[i])
+                if result_row[i] != '':
+                    result_df.loc[idx, col] = int(result_row[i])
+                else:
+                    result_df.loc[idx, col] = 0
             i += 1
         idx += 1
         progress['value'] = idx

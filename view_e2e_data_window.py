@@ -30,13 +30,8 @@ def View_E2E_Data(root):
   headers = [
     ('Buyer', 12),
     ('Order', 9),
-    ('Grey Book. Qty', 18),
     ('Grey Recv. Qty', 18),
-    ('Grey Bal. Qty', 18),
-    ('Finish Book. Qty', 18),
     ('Finish Recv. Qty', 18),
-    ('Finish Bal. Qty', 18),
-    ('Order Qty', 18),
     ('Cutting Qty', 18),
     ('Input Qty', 18),
     ('Output Qty', 18),
@@ -95,6 +90,8 @@ def View_E2E_Data(root):
         progress = ttk.Progressbar(scrollable_frame, length=150, mode='determinate')
         progress['maximum'] = grey_book if grey_book > 0 else 1
         progress['value'] = value if pd.notna(value) else 0
+        if pd.notna(value) and grey_book > 0 and value < 0.3 * grey_book:
+            progress.configure(style='red.Horizontal.TProgressbar')
         progress.grid(row=row_idx, column=col_idx, sticky="w", padx=2, pady=2)
       elif col_idx >= 5 and col_idx <= 7:
         value = row.get(header, "")
